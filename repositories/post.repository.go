@@ -21,7 +21,7 @@ const index = "posts"
 
 var (
 	wait           sync.WaitGroup
-	PostRepository IPostRepository = &postRepository{}
+	PostRepository IPostRepository = postRepository{}
 )
 
 type IPostRepository interface {
@@ -31,7 +31,7 @@ type IPostRepository interface {
 
 type postRepository struct{}
 
-func (*postRepository) All() ([]domain.Post, error) {
+func (postRepository) All() ([]domain.Post, error) {
 	var buffer bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
@@ -82,7 +82,7 @@ func (*postRepository) All() ([]domain.Post, error) {
 	return posts, nil
 }
 
-func (*postRepository) Add(input inputs.Post) error {
+func (postRepository) Add(input inputs.Post) error {
 	wait.Add(1)
 	var error error
 	go func() {

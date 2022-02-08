@@ -8,7 +8,7 @@ import (
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/services"
 )
 
-var PostController IPostControler = &postController{}
+var PostController IPostControler = postController{}
 
 type IPostControler interface {
 	All(context *gin.Context)
@@ -20,7 +20,7 @@ type IPostControler interface {
 
 type postController struct{}
 
-func (*postController) All(context *gin.Context) {
+func (postController) All(context *gin.Context) {
 	posts, err := services.PostService.All()
 	if err != nil {
 		context.JSON(http.StatusServiceUnavailable, gin.H{"error": err})
@@ -29,7 +29,7 @@ func (*postController) All(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"data": posts})
 }
 
-func (*postController) Add(context *gin.Context) {
+func (postController) Add(context *gin.Context) {
 	input := inputs.Post{
 		Title: "my title",
 		Done:  false,
@@ -44,14 +44,14 @@ func (*postController) Add(context *gin.Context) {
 	context.JSON(http.StatusOK, "Add")
 }
 
-func (*postController) Single(context *gin.Context) {
+func (postController) Single(context *gin.Context) {
 	context.JSON(http.StatusOK, "Single")
 }
 
-func (*postController) Update(context *gin.Context) {
+func (postController) Update(context *gin.Context) {
 	context.JSON(http.StatusOK, "Update")
 }
 
-func (*postController) Remove(context *gin.Context) {
+func (postController) Remove(context *gin.Context) {
 	context.JSON(http.StatusOK, "Remove")
 }

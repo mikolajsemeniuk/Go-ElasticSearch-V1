@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	PostService IPostService = &postService{}
+	PostService IPostService = postService{}
 )
 
 type IPostService interface {
@@ -17,7 +17,7 @@ type IPostService interface {
 
 type postService struct{}
 
-func (*postService) All() ([]domain.Post, error) {
+func (postService) All() ([]domain.Post, error) {
 	posts, err := repositories.PostRepository.All()
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func (*postService) All() ([]domain.Post, error) {
 	return posts, nil
 }
 
-func (*postService) Add(input inputs.Post) error {
+func (postService) Add(input inputs.Post) error {
 	err := repositories.PostRepository.Add(input)
 	if err != nil {
 		return err
