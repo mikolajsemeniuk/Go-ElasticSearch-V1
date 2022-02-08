@@ -87,17 +87,12 @@ func (postRepository) Add(input inputs.Post) error {
 	channel := make(chan error)
 	go func() {
 		post := entities.Post{
-			Title: "dasdsa",
-			// Created: time.Now().Format(time.RFC3339),
 			Created: time.Now().Format(time.RFC3339),
 		}
 
 		copier.Copy(&post, &input)
 
-		fmt.Println("post: ", post)
-
 		body, err := json.Marshal(post)
-
 		if err != nil {
 			channel <- err
 		}
@@ -118,6 +113,7 @@ func (postRepository) Add(input inputs.Post) error {
 		if res.IsError() {
 			channel <- fmt.Errorf("[%s] Error indexing document", res.Status())
 		}
+
 		channel <- nil
 	}()
 	return <-channel
