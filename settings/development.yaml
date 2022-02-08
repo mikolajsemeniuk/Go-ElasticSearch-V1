@@ -1,0 +1,5 @@
+server:
+  port: 3000
+  basepath: /api/v1
+es1:
+  connectionstring: http://localhost:9200

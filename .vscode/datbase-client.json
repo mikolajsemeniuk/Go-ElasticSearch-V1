@@ -1,0 +1,43 @@
+{
+    "nosql.connections": {
+        "1644317384925": {
+            "host": "http://localhost:9200",
+            "dbPath": "",
+            "port": null,
+            "user": null,
+            "authType": "default",
+            "password": "",
+            "encoding": "utf8",
+            "clientKeyPath": null,
+            "clientCertPath": null,
+            "caPath": null,
+            "database": null,
+            "useSSL": false,
+            "usingSSH": false,
+            "showHidden": false,
+            "includeDatabases": null,
+            "dbType": "ElasticSearch",
+            "encrypt": true,
+            "isCluster": false,
+            "connectionUrl": "",
+            "srv": false,
+            "esAuth": "none",
+            "global": false,
+            "key": "1644317384925",
+            "timezone": "+00:00",
+            "ssh": {
+                "host": "",
+                "privateKeyPath": "/Users/mikolajsemeniuk/.ssh/id_rsa",
+                "port": 22,
+                "username": "root",
+                "type": "password",
+                "connectTimeout": 10000,
+                "algorithms": {
+                    "cipher": []
+                }
+            },
+            "name": "db",
+            "connectionKey": "nosql.connections"
+        }
+    }
+}
