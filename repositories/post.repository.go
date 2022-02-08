@@ -7,31 +7,32 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"sync"
+	"time"
 
 	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/data"
-	"github.com/mikolajsemeniuk/go-react-elasticsearch/domain"
+	"github.com/mikolajsemeniuk/go-react-elasticsearch/entities"
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/inputs"
+	"github.com/mikolajsemeniuk/go-react-elasticsearch/payloads"
 	"github.com/mitchellh/mapstructure"
 )
 
 const index = "posts"
 
 var (
-	wait           sync.WaitGroup
 	PostRepository IPostRepository = postRepository{}
 )
 
 type IPostRepository interface {
-	All() ([]domain.Post, error)
+	All() ([]payloads.Post, error)
 	Add(inputs.Post) error
 }
 
 type postRepository struct{}
 
-func (postRepository) All() ([]domain.Post, error) {
+func (postRepository) All() ([]payloads.Post, error) {
 	var buffer bytes.Buffer
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
@@ -71,9 +72,9 @@ func (postRepository) All() ([]domain.Post, error) {
 		return nil, fmt.Errorf("error parsing the response body: %s", err)
 	}
 
-	var posts []domain.Post
+	posts := []payloads.Post{}
 	for _, hit := range body["hits"].(map[string]interface{})["hits"].([]interface{}) {
-		var post domain.Post
+		var post payloads.Post
 		mapstructure.Decode(hit.(map[string]interface{})["_source"].(map[string]interface{}), &post)
 		post.Id, _ = uuid.Parse(hit.(map[string]interface{})["_id"].(string))
 		posts = append(posts, post)
@@ -83,14 +84,22 @@ func (postRepository) All() ([]domain.Post, error) {
 }
 
 func (postRepository) Add(input inputs.Post) error {
-	wait.Add(1)
-	var error error
+	channel := make(chan error)
 	go func() {
-		defer wait.Done()
+		post := entities.Post{
+			Title: "dasdsa",
+			// Created: time.Now().Format(time.RFC3339),
+			Created: time.Now().Format(time.RFC3339),
+		}
 
-		body, err := json.Marshal(input)
+		copier.Copy(&post, &input)
+
+		fmt.Println("post: ", post)
+
+		body, err := json.Marshal(post)
+
 		if err != nil {
-			error = err
+			channel <- err
 		}
 
 		request := esapi.IndexRequest{
@@ -102,14 +111,14 @@ func (postRepository) Add(input inputs.Post) error {
 
 		res, err := request.Do(context.Background(), data.ElasticSearchClient)
 		if err != nil {
-			error = err
+			channel <- err
 		}
 		defer res.Body.Close()
 
 		if res.IsError() {
-			error = fmt.Errorf("[%s] Error indexing document", res.Status())
+			channel <- fmt.Errorf("[%s] Error indexing document", res.Status())
 		}
+		channel <- nil
 	}()
-	wait.Wait()
-	return error
+	return <-channel
 }

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/mikolajsemeniuk/go-react-elasticsearch/domain"
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/inputs"
+	"github.com/mikolajsemeniuk/go-react-elasticsearch/payloads"
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/repositories"
 )
 
@@ -11,13 +11,13 @@ var (
 )
 
 type IPostService interface {
-	All() ([]domain.Post, error)
+	All() ([]payloads.Post, error)
 	Add(input inputs.Post) error
 }
 
 type postService struct{}
 
-func (postService) All() ([]domain.Post, error) {
+func (postService) All() ([]payloads.Post, error) {
 	posts, err := repositories.PostRepository.All()
 	if err != nil {
 		return nil, err
