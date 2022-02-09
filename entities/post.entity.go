@@ -7,6 +7,6 @@ import (
 type Post struct {
 	Title   string
 	Done    bool
-	Created string
+	Created time.Time
 	Updated *time.Time
 }

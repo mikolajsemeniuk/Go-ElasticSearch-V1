@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/inputs"
 	"github.com/mikolajsemeniuk/go-react-elasticsearch/services"
 )
@@ -49,9 +50,29 @@ func (postController) Single(context *gin.Context) {
 }
 
 func (postController) Update(context *gin.Context) {
-	context.JSON(http.StatusOK, "Update")
+	id := context.MustGet("id").(uuid.UUID)
+	input := inputs.Post{
+		Title: "Update title",
+		Done:  true,
+	}
+
+	err := services.PostService.Update(id, input)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, "Updated")
 }
 
 func (postController) Remove(context *gin.Context) {
-	context.JSON(http.StatusOK, "Remove")
+	id := context.MustGet("id").(uuid.UUID)
+
+	err := services.PostService.Remove(id)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, "Removed")
 }
